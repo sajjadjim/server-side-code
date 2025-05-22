@@ -50,15 +50,41 @@ async function run() {
         // Add Task Data new here Logic Write 
         app.post('/tasks', async (req, res) => {
             const newUser = req.body
-            console.log(newUser)
+            // console.log(newUser)
             const result = await tasksCollection.insertOne(newUser)
             res.send(result)
         })
+        //  single Task Taken code Here 
+        app.get('/tasks/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await tasksCollection.findOne(query)
+            res.send(result)
+        })
+        // Update data single Task 
+        app.put('/tasks/:id', async (req, res) => {
+            const id = req.params.id
+            const filterData = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            // Full object Taken Here 
+            const updatedTask = req.body
 
-        // ----------------------------------------------------------------------------------------------------------
+            const updatedDoc = {
+                $set: updatedTask
+            }
+            const result = await tasksCollection.updateOne(filterData, updatedDoc, options)
+            res.send(result)
+        })
         //  ALL Task taken from Database 
         app.get('/tasks', async (req, res) => {
             const result = await tasksCollection.find().toArray();
+            res.send(result)
+        })
+        //Delete Task Items
+        app.delete('/tasks/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await tasksCollection.deleteOne(query)
             res.send(result)
         })
 
@@ -73,7 +99,12 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('All Users Are running !!!')
+    res.send(`<div>
+        <h1>All Users Are running !!!</h1>
+        <P>User Server and Task Server Running ......</P>
+        <p>This is a Frelancer server .Here user can add Task and Update Task and User can create Account Here.</p>
+        </div>
+        `)
 })
 
 app.listen(port, () => {
