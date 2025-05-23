@@ -9,7 +9,6 @@ const port = process.env.PORT || 3000
 app.use(cors())
 app.use(express.json());
 
-
 const uri = `mongodb+srv://${process.env.DB_ID}:${process.env.DB_PASS}@sajjadjim15.ac97xgz.mongodb.net/?retryWrites=true&w=majority&appName=SajjadJim15`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,7 +26,7 @@ async function run() {
         await client.connect();
         const usersCollection = client.db('ClientDB').collection('users')
 
-        // Add users Data new here Logic Write 
+        // Add user Data and store that to the MongoDB 
         app.post('/users', async (req, res) => {
             const newUser = req.body
             console.log(newUser)
@@ -35,23 +34,21 @@ async function run() {
             res.send(result)
         })
 
-        // ----------------------------------------------------------------------------------------------------------
-        //  ALL users taken from Database 
+        //  ALL Information  taken from Database 
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result)
         })
 
-        //----------------------------------------------------------------------------------------------------------------
-        // Task Part Here 
+        //-------------------------------------------------------------------------------------------------------------
+        // Server side Rerlated All CRUD Operation  Part Here 
         //--------------------------------------------------------------------------------------------------------------
         const tasksCollection = client.db('TaskDB').collection('tasks')
 
         // Add Task Data new here Logic Write 
         app.post('/tasks', async (req, res) => {
-            const newUser = req.body
-            // console.log(newUser)
-            const result = await tasksCollection.insertOne(newUser)
+            const newTask = req.body
+            const result = await tasksCollection.insertOne(newTask)
             res.send(result)
         })
         //  single Task Taken code Here 
@@ -66,7 +63,7 @@ async function run() {
             const id = req.params.id
             const filterData = { _id: new ObjectId(id) }
             const options = { upsert: true };
-            // Full object Taken Here 
+            // Full object select  -> 
             const updatedTask = req.body
 
             const updatedDoc = {
@@ -75,12 +72,12 @@ async function run() {
             const result = await tasksCollection.updateOne(filterData, updatedDoc, options)
             res.send(result)
         })
-        //  ALL Task taken from Database 
+        //  ALL Tasks Data get from Database 
         app.get('/tasks', async (req, res) => {
             const result = await tasksCollection.find().toArray();
             res.send(result)
         })
-        //Delete Task Items
+        //Delete (single Task) Task Code 
         app.delete('/tasks/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
@@ -88,9 +85,6 @@ async function run() {
             res.send(result)
         })
 
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
     }
