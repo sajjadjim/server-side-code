@@ -26,7 +26,7 @@ async function run() {
         await client.connect();
         const usersCollection = client.db('ClientDB').collection('users')
 
-        // Add user Data and store that to the MongoDB 
+        // Add new user information and store that to the MongoDB 
         app.post('/users', async (req, res) => {
             const newUser = req.body
             console.log(newUser)
@@ -34,7 +34,7 @@ async function run() {
             res.send(result)
         })
 
-        //  ALL Information  taken from Database 
+        //  ALL Users Information  taken from Database 
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result)
@@ -45,7 +45,7 @@ async function run() {
         //--------------------------------------------------------------------------------------------------------------
         const tasksCollection = client.db('TaskDB').collection('tasks')
 
-        // Add Task Data new here Logic Write 
+        // Add a Task and that store to the MongoDB  
         app.post('/tasks', async (req, res) => {
             const newTask = req.body
             const result = await tasksCollection.insertOne(newTask)
@@ -58,7 +58,7 @@ async function run() {
             const result = await tasksCollection.findOne(query)
             res.send(result)
         })
-        // Update data single Task 
+        // Update Task Information -> 
         app.put('/tasks/:id', async (req, res) => {
             const id = req.params.id
             const filterData = { _id: new ObjectId(id) }
@@ -85,7 +85,19 @@ async function run() {
             res.send(result)
         })
 
-    } finally {
+        const reviewsCollection = client.db('ReviewsDB').collection('reviews')
+
+        // Add new user information and store that to the MongoDB 
+        app.post('/reviews', async (req, res) => {
+            const newReview = req.body
+            console.log(newReview)
+            const result = await usersCollection.insertOne(newReview)
+            res.send(result)
+        })
+
+    
+    } 
+    finally {
 
     }
 }
