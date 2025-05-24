@@ -29,7 +29,6 @@ async function run() {
         // Add new user information and store that to the MongoDB 
         app.post('/users', async (req, res) => {
             const newUser = req.body
-            console.log(newUser)
             const result = await usersCollection.insertOne(newUser)
             res.send(result)
         })
@@ -87,14 +86,26 @@ async function run() {
 
         const reviewsCollection = client.db('ReviewsDB').collection('reviews')
 
-        // Add new user information and store that to the MongoDB 
+        // Add new review from user and store that to the MongoDB 
         app.post('/reviews', async (req, res) => {
             const newReview = req.body
-            console.log(newReview)
-            const result = await usersCollection.insertOne(newReview)
+            const result = await reviewsCollection.insertOne(newReview)
+            res.send(result)
+        })
+         //  ALL Users Information  taken from Database 
+        app.get('/reviews', async (req, res) => {
+            const result = await reviewsCollection.find().toArray();
             res.send(result)
         })
 
+        app.get('/reviews/top', async (req, res) => {
+            const result = await reviewsCollection
+                .find({})
+                .sort({ rating: -1 }) 
+                .limit(6)
+                .toArray();
+            res.send(result);
+        });
     
     } 
     finally {
